@@ -38,6 +38,7 @@ namespace MineSweeper
     {
         Opened,
         Marked,
+        UnMarked,
         GameOver,
         Victory
     }

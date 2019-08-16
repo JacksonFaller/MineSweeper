@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using MineSweeper.Data;
 
-namespace MineSweeper.Interfaces
+namespace MineSweeper.Data
 {
     public interface IDataProvider<T>
     {

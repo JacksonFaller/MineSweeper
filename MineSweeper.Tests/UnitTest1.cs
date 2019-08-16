@@ -1,7 +1,7 @@
 using System;
 using MineSweeper;
 using MineSweeper.Generators;
-using MineSweeper.Interfaces;
+using MineSweeper.Generators.Interfaces;
 using NUnit.Framework;
 
 namespace Tests

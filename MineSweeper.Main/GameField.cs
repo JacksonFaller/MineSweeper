@@ -1,4 +1,4 @@
-using MineSweeper.Interfaces;
+using MineSweeper.Generators.Interfaces;
 
 namespace MineSweeper
 {
@@ -12,7 +12,9 @@ namespace MineSweeper
 
         public int Seed { get; }
 
-        public int MinesCount { get; set; }
+        public int MinesTotal { get; }
+
+        public int OpenedCells { get; private set; }
 
         public Cell this[int x, int y] => Cells[x, y];
 
@@ -25,7 +27,24 @@ namespace MineSweeper
             Height = height;
             Seed = seed;
             Cells = new Cell[width, height];
-            MinesCount = fieldGenerator.GenerateField(Cells, seed, width, height, density);
+            MinesTotal = fieldGenerator.GenerateField(Cells, seed, width, height, density);
+        }
+
+        public void MarkCell(int x, int y)
+        {
+            Cells[x, y].IsMarked = true;
+            OpenedCells++;
+        }
+
+        public void UnMarkCell(int x, int y)
+        {
+            Cells[x, y].IsMarked = false;
+            OpenedCells--;
+        }
+        
+        public void OpenCell(int x, int y)
+        {
+            OpenedCells++;
         }
 
         public int GetCellNumber(int x, int y)

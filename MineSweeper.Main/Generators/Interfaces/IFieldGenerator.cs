@@ -1,4 +1,4 @@
-namespace MineSweeper.Interfaces
+namespace MineSweeper.Generators.Interfaces
 {
     public interface IFieldGenerator
     {

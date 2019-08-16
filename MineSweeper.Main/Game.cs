@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MineSweeper.Data;
-using MineSweeper.Interfaces;
+using MineSweeper.Generators.Interfaces;
 
 namespace MineSweeper
 {
@@ -9,37 +9,46 @@ namespace MineSweeper
     {
         protected GameField Field { get; }
 
-        protected List<Move> MovesList { get; }
+        protected HashSet<Move> Moves { get; }
 
-        public IEnumerable<Move> PlayerMoves => MovesList;
+        public IEnumerable<Move> PlayerMoves => Moves;
 
         public int Seed => Field.Seed;
 
         public Game(IFieldGenerator fieldGenerator, int seed, int width, int height, int density)
         {
             Field = new GameField(width, height, density, seed, fieldGenerator);
-            MovesList = new List<Move>();
+            Moves = new HashSet<Move>();
         }
 
-        public MoveResult MakeMove(Move move)
+        public MoveResult MakeMove(Move playerMove)
         {
-            MovesList.Add(move);
-            switch (move.Type)
+            Moves.Add(playerMove);
+            switch (playerMove.Type)
             {
                 case MoveType.Click:
-                    {
-                        if (Field[move.X, move.Y].IsMine)
-                            // TODO: Actually need to open the whole field and calculate number of mines for each cell
-                            return new MoveResult(MoveResultType.GameOver);
-                        else
-                            return OpenCell(move.X, move.Y);
-                    }
+                {
+                    if (Field[playerMove.X, playerMove.Y].IsMine)
+                        // TODO: Actually need to open the whole field and calculate number of mines for each cell
+                        return new MoveResult(MoveResultType.GameOver);
+                    return OpenCell(playerMove.X, playerMove.Y);
+                }
+
                 case MoveType.Mark:
-                    {
-                        Field[move.X, move.Y].IsMarked = true;
-                        return new MoveResult(MoveResultType.Marked);
-                    }
-                default: throw new ArgumentException("Invalid move type.", nameof(move));
+                {
+                    Field.MarkCell(playerMove.X, playerMove.Y);
+                    return new MoveResult(MoveResultType.Marked);
+                }
+
+                case MoveType.UnMark:
+                {
+                    Field.UnMarkCell(playerMove.X, playerMove.Y);
+                    Moves.Remove(playerMove);
+                    Moves.Remove(new Move(playerMove.X, playerMove.Y, MoveType.Mark));
+                    return new MoveResult(MoveResultType.UnMarked);
+                }
+
+                default: throw new ArgumentException("Invalid move type.", nameof(playerMove));
             }
         }
 

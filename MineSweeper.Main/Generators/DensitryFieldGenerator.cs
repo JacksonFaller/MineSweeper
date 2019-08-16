@@ -1,5 +1,5 @@
 using System;
-using MineSweeper.Interfaces;
+using MineSweeper.Generators.Interfaces;
 
 namespace MineSweeper.Generators
 {

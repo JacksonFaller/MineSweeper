@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MineSweeper.Data;
-using MineSweeper.Interfaces;
+using MineSweeper.Generators.Interfaces;
 
 namespace MineSweeper.GameManager
 {
@@ -23,21 +24,37 @@ namespace MineSweeper.GameManager
             var gameSave = new GameSave<T>
             {
                 Seed = game.Seed,
-                PlayerMoves = game.PlayerMoves.ToList()
+                PlayerMoves = game.PlayerMoves.Cast<PlayerMove>().ToList()
             };
             return await _dataProvider.SaveGameAsync(gameSave);
         }
 
-        public async Task<Game> LoadGameAsync(T id)
+        public async Task<GameState> LoadGameAsync(T id)
         {
             var gameSave = await _dataProvider.GetGameAsync(id);
             var game = new Game(_fieldGenerator, 
                 gameSave.Seed, gameSave.Width, gameSave.Height, gameSave.Density);
+            var moveResults = new List<MoveResult>();
             foreach (var move in gameSave.PlayerMoves)
             {
-                game.MakeMove(move);
+                moveResults.Add(game.MakeMove(move));
             }
-            return game;
+            return new GameState(game, moveResults);
+        }
+    }
+
+    public class GameState
+    {
+        private List<MoveResult> MoveResults { get; }
+
+        public IEnumerable<MoveResult> PlayerMovesResults => MoveResults;
+        
+        public Game Game { get; }
+
+        public GameState(Game game, List<MoveResult> moveResults)
+        {
+            Game = game;
+            MoveResults = moveResults;
         }
     }
 }

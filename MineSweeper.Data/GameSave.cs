@@ -11,6 +11,6 @@ namespace MineSweeper.Data
         public int Height { get; set; }
         public int Density { get; set; }
         
-        public List<Move> PlayerMoves { get; set; }
+        public List<PlayerMove> PlayerMoves { get; set; }
     }
 }
