@@ -17,7 +17,7 @@ namespace MineSweeper.Data
     public enum MoveType
     {
         Click,
-        Mark,
-        UnMark
+        Flag,
+        Unflag
     }
 }

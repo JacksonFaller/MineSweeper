@@ -1,11 +1,22 @@
 using MineSweeper.Data;
 
-namespace MineSweeper
+namespace MineSweeper.Models
 {
     public class Move
     {
+        /// <summary>
+        /// X coordinate
+        /// </summary>
         public int X { get; }
+
+        /// <summary>
+        /// Y coordinate
+        /// </summary>
         public int Y { get; }
+
+        /// <summary>
+        /// Type of a move
+        /// </summary>
         public MoveType Type { get; }
 
 
@@ -30,11 +41,11 @@ namespace MineSweeper
         {
             return Equals(obj as Move);
         }
-        
+
         public bool Equals(Move move)
         {
             // Check for null
-            if (ReferenceEquals(move, null))
+            if (move is null)
                 return false;
 
             // Check for same reference

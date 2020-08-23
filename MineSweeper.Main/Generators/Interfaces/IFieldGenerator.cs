@@ -1,7 +1,17 @@
+using MineSweeper.Generators.Params;
+using MineSweeper.Models;
+
 namespace MineSweeper.Generators.Interfaces
 {
-    public interface IFieldGenerator
+    public interface IFieldGenerator<T> where T : FieldGeneratorParamsBase
     {
-        int GenerateField(Cell[,] cells, int seed, int width, int height, int density);
+        /// <summary>
+        /// Generates field
+        /// </summary>
+        /// <param name="cells">field cells</param>
+        /// <returns>Amount of mines placed</returns>
+        int GenerateField(Cell[,] cells);
+
+        T Parameters { get; }
     }
 }

@@ -6,11 +6,19 @@ using Serilog;
 
 namespace MineSweeper.Data
 {
-    public class FileDataProvider : IDataProvider<string>
+    public class FileDataProvider<T> : IDataProvider<string, T>
     {
-        private const string BasePathToSavesDirectory = "/Saves/";
+        private const string DefaultPathToSavesDirectory = "/Saves/";
 
-        public async Task<GameSave<string>> GetGameAsync(string key)
+        private readonly string _basePathToSavesDirectory;
+
+        public FileDataProvider(string basePathToSavesDirectory)
+        {
+            _basePathToSavesDirectory = string.IsNullOrEmpty(basePathToSavesDirectory) ?
+                DefaultPathToSavesDirectory : basePathToSavesDirectory;
+        }
+
+        public async Task<GameSave<string, T>> GetGameAsync(string key)
         {
             if(key == null) throw new ArgumentNullException(nameof(key));
             StreamReader streamReader = null;
@@ -20,7 +28,7 @@ namespace MineSweeper.Data
                 var fileStream = new FileStream(savePath, FileMode.Open, FileAccess.Read);
                 streamReader = new StreamReader(fileStream);
                 string gameData = await streamReader.ReadToEndAsync();
-                var gameSave = JsonConvert.DeserializeObject<GameSave<string>>(gameData);
+                var gameSave = JsonConvert.DeserializeObject<GameSave<string, T>>(gameData);
                 return gameSave;
             }
             catch (Exception ex)
@@ -34,7 +42,7 @@ namespace MineSweeper.Data
             }
         }
 
-        public async Task<string> SaveGameAsync(GameSave<string> game)
+        public async Task<string> SaveGameAsync(GameSave<string, T> game)
         {
             if(game == null) throw new ArgumentNullException(nameof(game));
             StreamWriter streamWriter = null;
@@ -71,7 +79,7 @@ namespace MineSweeper.Data
 
         private string ComposeSavePath(string key)
         {
-            return $"{BasePathToSavesDirectory}{key}";
+            return $"{_basePathToSavesDirectory}{key}";
         }
     }
 }

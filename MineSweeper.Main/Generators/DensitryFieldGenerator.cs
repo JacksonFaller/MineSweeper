@@ -1,37 +1,36 @@
 using System;
+using MineSweeper.Generators.Contexts;
 using MineSweeper.Generators.Interfaces;
+using MineSweeper.Generators.Params;
+using MineSweeper.Models;
 
 namespace MineSweeper.Generators
 {
-    public class DensitryFieldGenerator : BaseFieldGenerator<DensitryFieldGeneratorContext>, IFieldGenerator
+    public class DensityFieldGenerator : BaseFieldGenerator<DensitryFieldGeneratorContext>, IFieldGenerator<DensityFieldGeneratorParams>
     {
-        public int GenerateField(Cell[,] cells, int seed, int width, int height, int density)
+        public DensityFieldGeneratorParams Parameters { get; }
+
+        public DensityFieldGenerator(DensityFieldGeneratorParams parameters)
         {
-            if (density < 1 || density > 100) throw new ArgumentException(nameof(density));
-            var context = new DensitryFieldGeneratorContext(new Random(seed), density);
-            InitializeField(cells, width, height, context);
+            Parameters = parameters;
+        }
+
+        public int GenerateField(Cell[,] cells)
+        {
+            if (Parameters.Density < 1 || Parameters.Density > 100)
+                throw new ArgumentOutOfRangeException(nameof(Parameters), "Density should be between 1 and 100 %");
+
+            var context = new DensitryFieldGeneratorContext(new Random(Parameters.Seed), Parameters.Density);
+            InitializeField(cells, context);
+            CalculateNumbers(cells);
             return context.MinesCount;
         }
 
-        public override void InitializeCell(Cell cell, DensitryFieldGeneratorContext context)
+        protected override void InitializeCell(Cell cell, DensitryFieldGeneratorContext context)
         {
-            cell.IsMine = context.Random.Next(1, 101) <= context.Density;
-            if (cell.IsMine) context.MinesCount++;
-        }
-    }
-
-    public class DensitryFieldGeneratorContext
-    {
-        public Random Random { get; set; }
-
-        public int MinesCount { get; set; }
-
-        public int Density { get; set; }
-
-        public DensitryFieldGeneratorContext(Random random, int density)
-        {
-            Random = random;
-            Density = density;
+            cell.Mine = context.Random.Next(1, 101) <= context.Density;
+            if (cell.Mine)
+                context.MinesCount++;
         }
     }
 }

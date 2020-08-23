@@ -1,24 +1,38 @@
+using MineSweeper.Models;
+using System.Collections.Generic;
+
 namespace MineSweeper.Generators
 {
     public abstract class BaseFieldGenerator<T>
     {
-        public virtual void InitializeField(Cell[,] cells, int width, int height, T context)
+        protected virtual void InitializeField(Cell[,] cells, T context)
         {
-            for (int i = 0; i < width; i++)
+            for (int x = 0; x < cells.GetLength(0); x++)
             {
-                for (int j = 0; j < height; j++)
+                for (int y = 0; y < cells.GetLength(1); y++)
                 {
-                    cells[i, j] = new Cell
-                    {
-                        X = i,
-                        Y = j,
-                    };
-                    InitializeCell(cells[i, j], context);
+                    cells[x, y] = new Cell(x, y);
+                    InitializeCell(cells[x, y], context);
                 }
             }
         }
 
-        public virtual void InitializeCell(Cell cell, T context)
+        protected void CalculateNumbers(Cell[,] cells)
+        {
+            for(int x = 0; x < cells.GetLength(0); x++)
+            {
+                for(int y = 0; y < cells.GetLength(1); y++)
+                {
+                    if(cells[x, y].Mine)
+                    {
+                        foreach (var neighbor in Utility.GetNeighbors(cells, x, y))
+                            neighbor.Number++;
+                    }
+                }
+            }
+        }
+
+        protected virtual void InitializeCell(Cell cell, T context)
         {
         }
     }
