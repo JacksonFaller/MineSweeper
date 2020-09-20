@@ -1,0 +1,14 @@
+.cell {
+  background-color:aqua;
+
+  &.open{
+    background-color:gray;
+    text-align: center;
+  }
+}
+
+.table{
+  caption{
+    margin-bottom: 10px;
+  }
+}

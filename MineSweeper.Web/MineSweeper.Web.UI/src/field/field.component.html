@@ -1,0 +1,13 @@
+<table class="table">
+    <caption>Minesweeper</caption>
+    <tbody>
+        <tr *ngFor="let row of cells">
+            <td *ngFor="let cell of row" class="cell"
+            [ngStyle]="{width: cellSize + 'px', height: cellSize + 'px'}"
+            [ngClass]="{open : cell.Open, 
+            mine: cell.Mine, flag: cell.Flag}"
+            (mousedown)="cellClick(cell, $event)">
+            {{cell.Open && !cell.Mine? cell.Number: ''}}</td>
+        </tr>
+    </tbody>
+</table>
