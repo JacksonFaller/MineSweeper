@@ -1,7 +1,11 @@
 export class Cell {
-  public Open: boolean;
-  public Flag: boolean;
-  public Mine: boolean;
+  public flag: boolean;
 
-  constructor(public X: number, public Y: number, public Number?: number) {}
+  constructor(
+    public x: number,
+    public y: number,
+    public number?: number,
+    public mine?: boolean,
+    public open = false,
+  ) {}
 }

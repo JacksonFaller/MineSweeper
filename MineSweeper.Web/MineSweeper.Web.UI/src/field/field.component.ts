@@ -1,54 +1,71 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Cell } from '../models/cell';
-import { MouseButton } from 'src/models/mouse-button';
-import { TransportService } from 'src/services/transport.service';
+import { FieldClick } from 'src/models/field-click';
+import { FieldService } from 'src/services/field.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-field',
   templateUrl: './field.component.html',
   styleUrls: ['./field.component.scss'],
 })
-export class FieldComponent implements OnInit {
+export class FieldComponent implements OnInit, OnDestroy {
   @Input() width: number;
   @Input() height: number;
   @Input() cellSize: number;
+  @Input() gameKey: string;
 
-  cells: Cell[][] = [];
+  @Output()
+  fieldClick = new EventEmitter<FieldClick>();
 
-  constructor(private transport: TransportService) {}
+  cells: Cell[][];
+
+  subscriptions: Array<Subscription> = [];
+
+  constructor(field: FieldService) {
+    this.subscriptions.push(
+      field.updateCellsSubscribe({
+        next: (cells) => this.openCells(cells),
+      }),
+    );
+
+    this.subscriptions.push(
+      field.refreshFieldSubscribe({
+        next: () => this.initField(),
+      }),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
 
   ngOnInit(): void {
+    this.initField();
+  }
+
+  initField(): void {
+    this.cells = [];
     for (let y = 0; y < this.height; y++) {
       let temp = [];
       for (let x = 0; x < this.width; x++) {
-        const num = Math.floor(Math.random() * 5 + 1);
-        temp.push(new Cell(x, y, num));
+        temp.push(new Cell(x, y));
       }
       this.cells.push(temp);
     }
   }
 
   cellClick(cell: Cell, event: MouseEvent): void {
-    cell.Open = true;
-    switch (event.button as MouseButton) {
-      case MouseButton.Left: {
-        this.transport.openCell(cell.X, cell.Y);
-        cell.Open = true;
-        break;
-      }
-      case MouseButton.Middle: {
-        this.transport.openNeighbors(cell.X, cell.Y);
-        break;
-      }
-      case MouseButton.Right: {
-        if (cell.Flag) {
-          this.transport.flagCell(cell.X, cell.Y);
-        } else {
-          this.transport.unflagCell(cell.X, cell.Y);
-        }
-        cell.Flag = !cell.Flag;
-        break;
-      }
-    }
+    this.fieldClick.emit(new FieldClick(event.button, cell));
+  }
+
+  openCells(cells: Cell[]) {
+    cells.forEach((val) => {
+      Object.assign(this.cells[val.y][val.x], {
+        number: val.number,
+        mine: val.mine,
+        open: true,
+      });
+    });
   }
 }

@@ -1,14 +1,22 @@
 .cell {
-  background-color:aqua;
+  background-color: aqua;
+  padding: 0;
+  border: 5px ridge #f00;
 
-  &.open{
-    background-color:gray;
+  &.open:not(.mine) {
+    background-color: gray;
     text-align: center;
+  }
+
+  &.mine {
+    background-color: red;
+  }
+
+  &.flag {
+    background-color: crimson;
   }
 }
 
-.table{
-  caption{
-    margin-bottom: 10px;
-  }
+.table {
+  border-spacing: 0;
 }

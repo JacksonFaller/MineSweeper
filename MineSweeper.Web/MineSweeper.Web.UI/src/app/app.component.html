@@ -1,3 +1,15 @@
-<button (click)="startClick()">Start</button>
-<app-timer style="margin-left: 20px;"></app-timer>
-<app-field [width]="10" [height]="10" [cellSize]="20"></app-field>
+<div class="container" [style.width]="(cellSize + 10) * width + 'px'">
+  <div class="header">
+    <span class="unflagged-mines-count">{{ unflaggedMinesCount }}</span>
+    <button (click)="startClick()">Restart</button>
+    <app-timer></app-timer>
+  </div>
+
+  <app-field
+    [width]="width"
+    [height]="height"
+    [cellSize]="cellSize"
+    [gameKey]="gameKey"
+    (fieldClick)="fieldClick($event)"
+  ></app-field>
+</div>
