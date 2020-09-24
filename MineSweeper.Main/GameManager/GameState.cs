@@ -1,18 +1,17 @@
-﻿using MineSweeper.Generators.Params;
-using MineSweeper.Models;
+﻿using MineSweeper.Models;
 using System.Collections.Generic;
 
 namespace MineSweeper.GameManager
 {
-    public class GameState<T> where T : FieldGeneratorParamsBase
+    public class GameState
     {
         private List<MoveResult> MoveResults { get; }
 
         public IEnumerable<MoveResult> PlayerMovesResults => MoveResults;
 
-        public Game<T> Game { get; }
+        public Game Game { get; }
 
-        public GameState(Game<T> game, List<MoveResult> moveResults)
+        public GameState(Game game, List<MoveResult> moveResults)
         {
             Game = game;
             MoveResults = moveResults;

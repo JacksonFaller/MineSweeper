@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace MineSweeper.Data
 {
-    public class GameSave<T, G>
+    public class GameSave<T>
     {
         public T Id { get; set; }
 
@@ -10,8 +10,8 @@ namespace MineSweeper.Data
 
         public int Height { get; set; }
 
-        public G GeneratorParams { get; set; }
-        
-        public List<PlayerMove> PlayerMoves { get; set; }
+        public FieldGeneratorParams GeneratorParams { get; set; }
+
+        public List<Move> PlayerMoves { get; set; }
     }
 }

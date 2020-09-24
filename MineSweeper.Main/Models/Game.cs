@@ -1,27 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using MineSweeper.Data;
 using MineSweeper.Enums;
 using MineSweeper.Generators.Interfaces;
-using MineSweeper.Generators.Params;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MineSweeper.Models
 {
-    public class Game<T> where T : FieldGeneratorParamsBase
+    public class Game
     {
         public IEnumerable<Move> PlayerMoves => Moves;
-        public IFieldGenerator<T> FieldGenerator => Field.FieldGenerator;
-
-        protected GameField<T> Field { get; }
-
-        protected HashSet<Move> Moves { get; }
-
+        public IFieldGenerator FieldGenerator => Field.FieldGenerator;
         public bool Finished { get; private set; }
 
-        public Game(IFieldGenerator<T> fieldGenerator, int width, int height)
+        protected GameField Field { get; }
+        protected HashSet<Move> Moves { get; }
+
+        public Game(IFieldGenerator fieldGenerator, int width, int height)
         {
-            Field = new GameField<T>(width, height, fieldGenerator);
+            Field = new GameField(width, height, fieldGenerator);
             Moves = new HashSet<Move>();
         }
 
@@ -30,53 +27,97 @@ namespace MineSweeper.Models
             if (Finished)
                 return new MoveResult(MoveResultType.Finished);
 
-            Moves.Add(playerMove);
             switch (playerMove.Type)
             {
                 case MoveType.Click:
                 {
+                    Moves.Add(playerMove);
                     return OpenCell(playerMove.X, playerMove.Y);
                 }
                 case MoveType.Flag:
                 {
+                    Moves.Add(playerMove);
                     Field.FlagCell(playerMove.X, playerMove.Y);
                     return new MoveResult(MoveResultType.Flagged);
                 }
                 case MoveType.Unflag:
                 {
                     Field.UnflagCell(playerMove.X, playerMove.Y);
-                    Moves.Remove(playerMove);
                     Moves.Remove(new Move(playerMove.X, playerMove.Y, MoveType.Flag));
                     return new MoveResult(MoveResultType.Unflagged);
                 }
+                case MoveType.OpenNeighbors:
+                {
+                    var validationResult = ValidateNeighbors(playerMove.X, playerMove.Y);
+                    if (validationResult != null)
+                        return validationResult;
+
+                    Moves.Add(playerMove);
+                    return OpenNeighbors(playerMove.X, playerMove.Y);
+                }
                 default:
-                    throw new ArgumentOutOfRangeException("Invalid move type.", nameof(playerMove));
+                    throw new ArgumentOutOfRangeException(nameof(playerMove), $"Move type.{playerMove.Type} is not supported");
             }
+        }
+
+        protected MoveResult ValidateNeighbors(int x, int y)
+        {
+            int flaggedCount = 0;
+            bool gameOver = false;
+            foreach (var cell in Field.GetNeighbors(x, y))
+            {
+                if (cell.Flagged)
+                    flaggedCount++;
+                else if (cell.Mine)
+                    gameOver = true;
+            }
+
+            if (flaggedCount != Field[y, x].Number)
+                return new MoveResult(MoveResultType.Opened, new List<ResultCell>());
+
+            return gameOver ? GameOver() : null;
+        }
+
+        protected MoveResult OpenNeighbors(int x, int y)
+        {
+            List<ResultCell> openedCells = Field.GetNeighbors(x, y)
+                .Where(x => !x.Flagged && !x.Oppened)
+                .SelectMany(cell => Field.OpenCell(cell.X, cell.Y))
+                .ToList();
+
+            if (openedCells.Any(x => x.Mine))
+                return GameOver();
+
+            MoveResultType resultType = CheckForVictory();
+            return new MoveResult(resultType, openedCells);
         }
 
         protected MoveResult OpenCell(int x, int y)
         {
-            Cell cell = Field[x, y];
-            if (cell.Mine)
-            {
-                Finished = true;
-                List<ResultCell> unopenedCells = Field.GetUnflaggedMines().Select(x => new ResultCell(x)).ToList();
-                return new MoveResult(MoveResultType.GameOver, unopenedCells);
-            }
+            if (Field[y, x].Mine)
+                return GameOver();
 
-            List<ResultCell> openedCells = Field.OpenCell(x, y).Select(x => new ResultCell(x)).ToList();
-            MoveResultType resultType = Field.CellsToOpen == 0 ? MoveResultType.Victory : MoveResultType.Opened;
+            List<ResultCell> openedCells = Field.OpenCell(x, y).ToList();
+            MoveResultType resultType = CheckForVictory();
             return new MoveResult(resultType, openedCells);
         }
 
-        public void CheckNeighbors(Cell cell, List<ResultCell> result)
+        protected MoveResult GameOver()
         {
-            result.Add(new ResultCell(cell));
-            if (cell.Number != 0)
-                return;
+            Finished = true;
+            List<ResultCell> unopenedCells = Field.GetUnflaggedMines().Select(x => new ResultCell(x)).ToList();
+            return new MoveResult(MoveResultType.GameOver, unopenedCells);
+        }
 
-            foreach (Cell neighbor in Field.GetNeighbors(cell.X, cell.Y))
-                CheckNeighbors(neighbor, result);
+        protected MoveResultType CheckForVictory()
+        {
+            if (Field.CellsToOpen == 0)
+            {
+                Finished = true;
+                return MoveResultType.Victory;
+            }
+
+            return MoveResultType.Opened;
         }
     }
 }

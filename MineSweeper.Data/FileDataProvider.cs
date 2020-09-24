@@ -1,12 +1,12 @@
+using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Serilog;
 
 namespace MineSweeper.Data
 {
-    public class FileDataProvider<T> : IDataProvider<string, T>
+    public class FileDataProvider<T> : IDataProvider<string>
     {
         private const string DefaultPathToSavesDirectory = "/Saves/";
 
@@ -18,9 +18,9 @@ namespace MineSweeper.Data
                 DefaultPathToSavesDirectory : basePathToSavesDirectory;
         }
 
-        public async Task<GameSave<string, T>> GetGameAsync(string key)
+        public async Task<GameSave<string>> GetGameAsync(string key)
         {
-            if(key == null) throw new ArgumentNullException(nameof(key));
+            if (key == null) throw new ArgumentNullException(nameof(key));
             StreamReader streamReader = null;
             try
             {
@@ -28,12 +28,12 @@ namespace MineSweeper.Data
                 var fileStream = new FileStream(savePath, FileMode.Open, FileAccess.Read);
                 streamReader = new StreamReader(fileStream);
                 string gameData = await streamReader.ReadToEndAsync();
-                var gameSave = JsonConvert.DeserializeObject<GameSave<string, T>>(gameData);
+                var gameSave = JsonConvert.DeserializeObject<GameSave<string>>(gameData);
                 return gameSave;
             }
             catch (Exception ex)
             {
-                Log.Error(ex,$"Failed to load game with key: {key}");
+                Log.Error(ex, $"Failed to load game with key: {key}");
                 throw;
             }
             finally
@@ -42,9 +42,9 @@ namespace MineSweeper.Data
             }
         }
 
-        public async Task<string> SaveGameAsync(GameSave<string, T> game)
+        public async Task<string> SaveGameAsync(GameSave<string> game)
         {
-            if(game == null) throw new ArgumentNullException(nameof(game));
+            if (game == null) throw new ArgumentNullException(nameof(game));
             StreamWriter streamWriter = null;
             try
             {
@@ -58,7 +58,7 @@ namespace MineSweeper.Data
             }
             catch (Exception ex)
             {
-                Log.Error(ex,$"Failed to save game");
+                Log.Error(ex, $"Failed to save game");
                 throw;
             }
             finally
@@ -69,11 +69,11 @@ namespace MineSweeper.Data
 
         public void RemoveGame(string key)
         {
-            if(key == null) throw new ArgumentNullException(nameof(key));
+            if (key == null) throw new ArgumentNullException(nameof(key));
             string savePath = ComposeSavePath(key);
-            if(!File.Exists(savePath)) 
+            if (!File.Exists(savePath))
                 throw new ArgumentException($"Game with key {key} is not found", nameof(key));
-            
+
             File.Delete(savePath);
         }
 

@@ -17,8 +17,8 @@ namespace MineSweeper
             {
                 int indexX = x + ShiftMatrix[0, i];
                 int indexY = y + ShiftMatrix[1, i];
-                if (indexX >= 0 && indexX < cells.GetLength(0) && indexY >= 0 && indexY < cells.GetLength(1))
-                    yield return cells[indexX, indexY];
+                if (indexX >= 0 && indexX < cells.GetLength(1) && indexY >= 0 && indexY < cells.GetLength(0))
+                    yield return cells[indexY, indexX];
             }
         }
     }

@@ -1,11 +1,10 @@
+using MineSweeper.Generators.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using MineSweeper.Generators.Interfaces;
-using MineSweeper.Generators.Params;
 
 namespace MineSweeper.Models
 {
-    public class GameField<T> where T : FieldGeneratorParamsBase
+    public class GameField
     {
         #region Public properties
 
@@ -29,9 +28,9 @@ namespace MineSweeper.Models
         /// </summary>
         public int CellsToOpen { get; private set; }
 
-        public IFieldGenerator<T> FieldGenerator { get; }
+        public IFieldGenerator FieldGenerator { get; }
 
-        public Cell this[int x, int y] => Cells[x, y];
+        public Cell this[int y, int x] => Cells[y, x];
 
         /// <summary>
         /// Get cell at coordinates X&Y
@@ -39,7 +38,7 @@ namespace MineSweeper.Models
         /// <param name="x">X coordinate of a cell</param>
         /// <param name="y">Y coordinate of a cell</param>
         /// <returns>Cell</returns>
-        public Cell GetCell(int x, int y) => this[x, y];
+        public Cell GetCell(int y, int x) => this[y, x];
 
         #endregion
 
@@ -48,7 +47,7 @@ namespace MineSweeper.Models
         /// </summary>
         protected Cell[,] Cells { get; }
 
-        public GameField(int width, int height, IFieldGenerator<T> fieldGenerator)
+        public GameField(int width, int height, IFieldGenerator fieldGenerator)
         {
             Width = width;
             Height = height;
@@ -65,7 +64,7 @@ namespace MineSweeper.Models
         /// <param name="y">Y coordinate of a cell</param>
         public void FlagCell(int x, int y)
         {
-            Cells[x, y].Flagged = true;
+            Cells[y, x].Flagged = true;
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace MineSweeper.Models
         /// <param name="y">Y coordinate of a cell</param>
         public void UnflagCell(int x, int y)
         {
-            Cells[x, y].Flagged = false;
+            Cells[y, x].Flagged = false;
         }
 
         /// <summary>
@@ -84,19 +83,19 @@ namespace MineSweeper.Models
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public List<Cell> OpenCell(int x, int y)
+        public List<ResultCell> OpenCell(int x, int y)
         {
-            var openedCells = new List<Cell>();
+            var openedCells = new List<ResultCell>();
             OpenCellsRecursively(x, y, openedCells);
             return openedCells;
         }
 
-        private void OpenCellsRecursively(int x, int y, List<Cell> opened)
+        private void OpenCellsRecursively(int x, int y, List<ResultCell> opened)
         {
-            var cell = Cells[x, y];
+            var cell = Cells[y, x];
             cell.Oppened = true;
             CellsToOpen--;
-            opened.Add(cell);
+            opened.Add(new ResultCell(cell));
 
             if (cell.Number != 0)
                 return;
@@ -111,8 +110,8 @@ namespace MineSweeper.Models
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
                 {
-                    if (Cells[x, y].Mine && !Cells[x, y].Flagged)
-                        yield return Cells[x, y];
+                    if (Cells[y, x].Mine && !Cells[y, x].Flagged)
+                        yield return Cells[y, x];
                 }
             }
         }

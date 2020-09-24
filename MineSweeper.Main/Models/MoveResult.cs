@@ -5,10 +5,10 @@ namespace MineSweeper.Models
 {
     public class MoveResult
     {
-        public List<ResultCell> OpenedCells { get; }
+        public IList<ResultCell> OpenedCells { get; }
         public MoveResultType ResultType { get; }
 
-        public MoveResult(MoveResultType type, List<ResultCell> openedCells = null)
+        public MoveResult(MoveResultType type, IList<ResultCell> openedCells = null)
         {
             ResultType = type;
             OpenedCells = openedCells;
