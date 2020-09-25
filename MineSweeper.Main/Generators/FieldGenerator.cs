@@ -1,4 +1,4 @@
-using MineSweeper.Data;
+using MineSweeper.Data.Models;
 using MineSweeper.Generators.Contexts;
 using MineSweeper.Generators.Interfaces;
 using MineSweeper.Models;

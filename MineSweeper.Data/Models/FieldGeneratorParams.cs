@@ -1,4 +1,4 @@
-﻿namespace MineSweeper.Data
+﻿namespace MineSweeper.Data.Models
 {
     public class FieldGeneratorParams
     {

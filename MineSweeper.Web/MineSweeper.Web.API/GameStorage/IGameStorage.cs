@@ -1,4 +1,4 @@
-﻿using MineSweeper.Web.API.Models;
+﻿using MineSweeper.Models;
 using System;
 
 namespace MineSweeper.Web.API
@@ -7,12 +7,12 @@ namespace MineSweeper.Web.API
     {
         bool HasGame(Guid key);
 
-        void AddGame(Guid key, GameModel game);
+        void AddGame(Guid key, Game game);
 
-        GameModel GetGame(Guid key);
+        Game GetGame(Guid key);
 
         void RemoveGame(Guid key);
 
-        GameModel this[Guid key] { get; }
+        Game this[Guid key] { get; }
     }
 }

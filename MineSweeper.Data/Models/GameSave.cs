@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 
-namespace MineSweeper.Data
+namespace MineSweeper.Data.Models
 {
-    public class GameSave<T>
+    public class GameSave
     {
-        public T Id { get; set; }
+        public string Id { get; set; }
 
         public int Width { get; set; }
 
@@ -13,5 +14,7 @@ namespace MineSweeper.Data
         public FieldGeneratorParams GeneratorParams { get; set; }
 
         public List<Move> PlayerMoves { get; set; }
+
+        public TimeSpan Timer { get; set; }
     }
 }

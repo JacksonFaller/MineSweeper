@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MineSweeper.Generators;
 using MineSweeper.Generators.Interfaces;
+using MineSweeper.Web.API.DI;
 using System;
 using System.IO;
 using System.Reflection;
@@ -25,13 +26,14 @@ namespace MineSweeper.Web.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var corsOrigins = Configuration.GetSection("CORS:Origins");
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
                    builder =>
                    {
-                       builder.WithOrigins("https://localhost:4200",
-                           "http://localhost:4200")
+                       builder.WithOrigins(corsOrigins.Get<string[]>())
                        .AllowAnyMethod()
                        .AllowAnyHeader();
                    });
@@ -41,6 +43,7 @@ namespace MineSweeper.Web.API
             services.AddSingleton<IGameStorage>(new InMemoryGameStorage());
             services.AddSingleton<IFieldGeneratorFactory>(new FieldGeneratorFactory());
             services.AddSingleton<ISeedGenerator>(new SimpleSeedGenerator());
+            services.AddSingleton(DataProviderResolver.Resolve(Configuration));
 
             services.AddSwaggerGen(c =>
             {

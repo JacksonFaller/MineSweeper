@@ -11,7 +11,7 @@ namespace MineSweeper.Web.API
         public static void Main(string[] args)
         {
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", false)
                 .Build();
 
             Log.Logger = new LoggerConfiguration()

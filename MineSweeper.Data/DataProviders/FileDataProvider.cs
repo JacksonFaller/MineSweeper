@@ -1,24 +1,24 @@
+using MineSweeper.Data.Models;
 using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MineSweeper.Data
+namespace MineSweeper.Data.DataProviders
 {
-    public class FileDataProvider<T> : IDataProvider<string>
+    public class FileDataProvider : IDataProvider
     {
-        private const string DefaultPathToSavesDirectory = "/Saves/";
-
         private readonly string _basePathToSavesDirectory;
 
         public FileDataProvider(string basePathToSavesDirectory)
         {
-            _basePathToSavesDirectory = string.IsNullOrEmpty(basePathToSavesDirectory) ?
-                DefaultPathToSavesDirectory : basePathToSavesDirectory;
+
+            _basePathToSavesDirectory = basePathToSavesDirectory ??
+                throw new ArgumentNullException(nameof(basePathToSavesDirectory));
         }
 
-        public async Task<GameSave<string>> GetGameAsync(string key)
+        public async Task<GameSave> LoadGameAsync(string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             StreamReader streamReader = null;
@@ -28,7 +28,7 @@ namespace MineSweeper.Data
                 var fileStream = new FileStream(savePath, FileMode.Open, FileAccess.Read);
                 streamReader = new StreamReader(fileStream);
                 string gameData = await streamReader.ReadToEndAsync();
-                var gameSave = JsonConvert.DeserializeObject<GameSave<string>>(gameData);
+                var gameSave = JsonConvert.DeserializeObject<GameSave>(gameData);
                 return gameSave;
             }
             catch (Exception ex)
@@ -42,7 +42,7 @@ namespace MineSweeper.Data
             }
         }
 
-        public async Task<string> SaveGameAsync(GameSave<string> game)
+        public async Task<string> SaveGameAsync(GameSave game)
         {
             if (game == null) throw new ArgumentNullException(nameof(game));
             StreamWriter streamWriter = null;

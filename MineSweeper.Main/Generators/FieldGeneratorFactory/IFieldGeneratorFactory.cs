@@ -1,7 +1,7 @@
-﻿using MineSweeper.Data;
+﻿using MineSweeper.Data.Models;
 using MineSweeper.Generators.Interfaces;
 
-namespace MineSweeper.Web.API
+namespace MineSweeper.Generators
 {
     public interface IFieldGeneratorFactory
     {

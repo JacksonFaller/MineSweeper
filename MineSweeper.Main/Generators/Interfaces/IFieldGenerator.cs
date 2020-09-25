@@ -1,4 +1,4 @@
-using MineSweeper.Data;
+using MineSweeper.Data.Models;
 using MineSweeper.Models;
 
 namespace MineSweeper.Generators.Interfaces

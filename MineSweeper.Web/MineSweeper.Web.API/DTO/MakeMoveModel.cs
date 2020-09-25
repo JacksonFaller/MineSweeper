@@ -1,4 +1,4 @@
-﻿using MineSweeper.Data;
+﻿using MineSweeper.Data.Models;
 
 namespace MineSweeper.Web.API.DTO
 {

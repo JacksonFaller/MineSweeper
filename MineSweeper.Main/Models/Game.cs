@@ -1,4 +1,4 @@
-using MineSweeper.Data;
+using MineSweeper.Data.Models;
 using MineSweeper.Enums;
 using MineSweeper.Generators.Interfaces;
 using System;
@@ -12,14 +12,19 @@ namespace MineSweeper.Models
         public IEnumerable<Move> PlayerMoves => Moves;
         public IFieldGenerator FieldGenerator => Field.FieldGenerator;
         public bool Finished { get; private set; }
-
+        public DateTime StartTime { get; }
         protected GameField Field { get; }
         protected HashSet<Move> Moves { get; }
 
-        public Game(IFieldGenerator fieldGenerator, int width, int height)
+        public Game(IFieldGenerator fieldGenerator, int width, int height) : this(fieldGenerator, width, height, DateTime.UtcNow)
+        {
+        }
+
+        public Game(IFieldGenerator fieldGenerator, int width, int height, DateTime startTime)
         {
             Field = new GameField(width, height, fieldGenerator);
             Moves = new HashSet<Move>();
+            StartTime = startTime;
         }
 
         public MoveResult MakeMove(Move playerMove)
