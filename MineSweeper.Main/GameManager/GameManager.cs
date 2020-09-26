@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MineSweeper
 {
-    public class GameManager
+    public class GameManager : IGameManager
     {
         private readonly IDataProvider DataProvider;
         private readonly IFieldGeneratorFactory FieldGeneratorFactory;
@@ -46,6 +46,11 @@ namespace MineSweeper
                 moveResults.Add(game.MakeMove(move));
             }
             return game;
+        }
+
+        public Task RemoveGameAsync(string key)
+        {
+            return DataProvider.RemoveGameAsync(key);
         }
     }
 }

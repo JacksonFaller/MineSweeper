@@ -2,6 +2,7 @@
 {
     public enum DataProviderType
     {
-        File
+        File,
+        Text
     }
 }

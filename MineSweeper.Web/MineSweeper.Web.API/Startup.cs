@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using MineSweeper.Generators;
 using MineSweeper.Generators.Interfaces;
 using MineSweeper.Web.API.DI;
+using MineSweeper.Web.API.DI.Options;
 using System;
 using System.IO;
 using System.Reflection;
@@ -26,24 +27,25 @@ namespace MineSweeper.Web.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var corsOrigins = Configuration.GetSection("CORS:Origins");
+            var corsOptions = Configuration.GetSection(CorsOptions.Cors).Get<CorsOptions>();
 
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
                    builder =>
                    {
-                       builder.WithOrigins(corsOrigins.Get<string[]>())
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
+                       builder.WithOrigins(corsOptions.Origins)
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
                    });
             });
 
             services.AddControllers();
-            services.AddSingleton<IGameStorage>(new InMemoryGameStorage());
-            services.AddSingleton<IFieldGeneratorFactory>(new FieldGeneratorFactory());
-            services.AddSingleton<ISeedGenerator>(new SimpleSeedGenerator());
+            services.AddSingleton<IGameStorage, InMemoryGameStorage>();
+            services.AddSingleton<IFieldGeneratorFactory, FieldGeneratorFactory>();
+            services.AddSingleton<ISeedGenerator, SimpleSeedGenerator>();
             services.AddSingleton(DataProviderResolver.Resolve(Configuration));
+            services.AddSingleton<IGameManager, GameManager>();
 
             services.AddSwaggerGen(c =>
             {

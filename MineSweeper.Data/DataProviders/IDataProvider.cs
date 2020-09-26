@@ -9,6 +9,6 @@ namespace MineSweeper.Data.DataProviders
 
         Task<string> SaveGameAsync(GameSave game);
 
-        void RemoveGame(string key);
+        Task RemoveGameAsync(string key);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MineSweeper.Data.DataProviders;
 using MineSweeper.Data.Models;
 using MineSweeper.Enums;
 using MineSweeper.Generators;
@@ -20,15 +19,15 @@ namespace MineSweeper.Web.API.Controllers
         private readonly IGameStorage GameStorage;
         private readonly IFieldGeneratorFactory FieldGeneratorFactory;
         private readonly ISeedGenerator SeedGenerator;
-        private readonly GameManager GameManager;
+        private readonly IGameManager GameManager;
 
         public GameController(IGameStorage gameStorage, IFieldGeneratorFactory fieldGeneratorFactory,
-             ISeedGenerator seedGenerator, IDataProvider dataProvider)
+             ISeedGenerator seedGenerator, IGameManager gameManager)
         {
             GameStorage = gameStorage;
             FieldGeneratorFactory = fieldGeneratorFactory;
             SeedGenerator = seedGenerator;
-            GameManager = new GameManager(dataProvider, FieldGeneratorFactory);
+            GameManager = gameManager;
         }
 
         /// <summary>
