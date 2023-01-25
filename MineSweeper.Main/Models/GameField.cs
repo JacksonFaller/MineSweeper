@@ -9,22 +9,22 @@ namespace MineSweeper.Models
         #region Public properties
 
         /// <summary>
-        /// Width of a game field
+        /// Width of the game field
         /// </summary>
         public int Width { get; }
 
         /// <summary>
-        /// Height of a game field
+        /// Height of the game field
         /// </summary>
         public int Height { get; }
 
         /// <summary>
-        /// Total amount of mines on a field
+        /// Total amount of mines on the field
         /// </summary>
         public int MinesTotal { get; }
 
         /// <summary>
-        /// Amount of opened cells
+        /// Count of opened cells
         /// </summary>
         public int CellsToOpen { get; private set; }
 
@@ -35,8 +35,8 @@ namespace MineSweeper.Models
         /// <summary>
         /// Get cell at coordinates X&Y
         /// </summary>
-        /// <param name="x">X coordinate of a cell</param>
-        /// <param name="y">Y coordinate of a cell</param>
+        /// <param name="x">X coordinate of the cell</param>
+        /// <param name="y">Y coordinate of the cell</param>
         /// <returns>Cell</returns>
         public Cell GetCell(int y, int x) => this[y, x];
 
@@ -58,20 +58,20 @@ namespace MineSweeper.Models
         }
 
         /// <summary>
-        /// Flag a cell
+        /// Flag the cell
         /// </summary>
-        /// <param name="x">X coordinate of a cell</param>
-        /// <param name="y">Y coordinate of a cell</param>
+        /// <param name="x">X coordinate of the cell</param>
+        /// <param name="y">Y coordinate of the cell</param>
         public void FlagCell(int x, int y)
         {
             Cells[y, x].Flagged = true;
         }
 
         /// <summary>
-        /// Remove a flag from a cell
+        /// Remove the flag from the cell
         /// </summary>
-        /// <param name="x">X coordinate of a cell</param>
-        /// <param name="y">Y coordinate of a cell</param>
+        /// <param name="x">X coordinate of the cell</param>
+        /// <param name="y">Y coordinate of the cell</param>
         public void UnflagCell(int x, int y)
         {
             Cells[y, x].Flagged = false;
@@ -80,16 +80,22 @@ namespace MineSweeper.Models
         /// <summary>
         /// Opens empty cells recursively
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
+        /// <param name="x">X coordinate of the cell</param>
+        /// <param name="y">Y coordinate of the cell</param>
+        /// <returns>List of opened cells</returns>
         public List<ResultCell> OpenCell(int x, int y)
         {
             var openedCells = new List<ResultCell>();
             OpenCellsRecursively(x, y, openedCells);
             return openedCells;
         }
-
+        
+        /// <summary>
+        /// Opens cells recursively
+        /// </summary>
+        /// <param name="x">X coordinate of the cell</param>
+        /// <param name="y">Y coordinate of the cell</param>
+        /// <param name="opened">List of opened cells</param>
         private void OpenCellsRecursively(int x, int y, List<ResultCell> opened)
         {
             var cell = Cells[y, x];
@@ -103,7 +109,10 @@ namespace MineSweeper.Models
             foreach (var neighbor in GetNeighbors(x, y).Where(x => !x.Oppened))
                 OpenCellsRecursively(neighbor.X, neighbor.Y, opened);
         }
-
+        
+        /// <summary>
+        /// Returns IEnumerable with unflagged mines
+        /// </summary>
         public IEnumerable<Cell> GetUnflaggedMines()
         {
             for (int x = 0; x < Cells.GetLength(0); x++)
@@ -116,6 +125,11 @@ namespace MineSweeper.Models
             }
         }
 
+        /// <summary>
+        /// Returns neighboring cells
+        /// </summary>
+        /// <param name="x">X coordinate of the cell</param>
+        /// <param name="y">Y coordinate of the cell</param>
         public IEnumerable<Cell> GetNeighbors(int x, int y) => Utility.GetNeighbors(Cells, x, y);
     }
 }
