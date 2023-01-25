@@ -46,6 +46,7 @@ namespace MineSweeper.Web.API
             services.AddSingleton<ISeedGenerator, SimpleSeedGenerator>();
             services.AddSingleton(DataProviderResolver.Resolve(Configuration));
             services.AddSingleton<IGameManager, GameManager>();
+            services.AddSingleton<IGameSaveProvider, IGameSaveProvider>();
 
             services.AddSwaggerGen(c =>
             {

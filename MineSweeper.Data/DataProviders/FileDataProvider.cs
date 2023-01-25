@@ -18,10 +18,14 @@ namespace MineSweeper.Data.DataProviders
 
         public async Task<GameSave> LoadGameAsync(string key)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 
             string savePath = ComposeSavePath(key);
-            var fileStream = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+
+            if (!File.Exists(savePath)) 
+                throw new ArgumentException($"Game with the key {key} was not found", nameof(key));
+
+            using var fileStream = new FileStream(savePath, FileMode.Open, FileAccess.Read);
             var streamReader = new StreamReader(fileStream);
             string gameData = await streamReader.ReadToEndAsync();
             var gameSave = Serializer.Deserialize<GameSave>(gameData);
@@ -34,6 +38,7 @@ namespace MineSweeper.Data.DataProviders
 
             game.Id = Guid.NewGuid().ToString();
             string savePath = ComposeSavePath(game.Id);
+
             using var fileStream = new FileStream(savePath, FileMode.CreateNew, FileAccess.Write);
             var streamWriter = new StreamWriter(fileStream);
             string gameSave = Serializer.Serialize(game);
@@ -43,7 +48,7 @@ namespace MineSweeper.Data.DataProviders
 
         public Task RemoveGameAsync(string key)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
             string savePath = ComposeSavePath(key);
             if (!File.Exists(savePath))
                 throw new ArgumentException($"Game with the key {key} was not found", nameof(key));
